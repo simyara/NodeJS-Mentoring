@@ -28,7 +28,6 @@ class DirWatcher extends EventEmitter {
         const fileContent = fs.readFileSync(filename);
         hash.update(fileContent);
         const result = hash.digest('hex');
-        //console.log(`${result} of ${filename}`);
         return result;
     }
 
@@ -39,7 +38,6 @@ class DirWatcher extends EventEmitter {
             if (err) {
                 throw err;
             }
-            // console.log(items.length);
 
             var wasDeleted = dirwatcher.difference(dirwatcher.files.map((e) => {
                 return e.name
@@ -61,10 +59,8 @@ class DirWatcher extends EventEmitter {
                         name: e,
                         hash: hash
                     });
-
                     dirwatcherFile.hash = hash;
                 }
-
             });
             if (wasChanged.length > 0) {
                 wasChanged = wasChanged.map((e) => {

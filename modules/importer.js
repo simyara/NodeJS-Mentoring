@@ -1,5 +1,4 @@
 const fs = require('fs');
-const DirWatcher = require('./dirwatcher').default;
 
 class Importer {
     constructor(path, dirwatcher, syncImport) {
@@ -23,7 +22,7 @@ class Importer {
     csv2json(data) {
         var jsonObj = [];
         var bufferString = data.toString();
-        var arr = bufferString.split('\r\n');
+        var arr = bufferString.split('\n');
         var headers = arr[0].split(';');
         for (var i = 1; i < arr.length; i++) {
             var data = arr[i].split(';');
@@ -42,7 +41,7 @@ class Importer {
         return new Promise(function(resolve, reject) {
             fs.readFile(path, type, (err, fileContent) => {
                 if (err) reject(err);
-                let jsonObj = importer.csv2json(fileContent);
+                var jsonObj = importer.csv2json(fileContent);
                 resolve(JSON.stringify(jsonObj));
             });
         });
@@ -51,7 +50,7 @@ class Importer {
     importSync(path) {
         try {
             const fileContent = fs.readFileSync(path);
-            let jsonObj = this.csv2json(fileContent);
+            var jsonObj = this.csv2json(fileContent);
             return JSON.stringify(jsonObj);
         } catch (error) {
             console.error(error);
