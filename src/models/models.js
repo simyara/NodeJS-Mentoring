@@ -1,4 +1,2 @@
-export default {
-    User :  require('./User.js').default,
-    Product :  require('./Product.js').default,
-}
+export {User} from './User';
+export {Product} from './Product';
