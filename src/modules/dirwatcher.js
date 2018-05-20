@@ -1,8 +1,8 @@
-const EventEmitter = require('events');
-const fs = require('fs');
-const crypto = require('crypto');
+import EventEmitter from 'events';
+import fs from 'fs';
+import crypto from 'crypto';
 
-class DirWatcher extends EventEmitter {
+export default class DirWatcher extends EventEmitter {
     constructor(path, delay) {
         super();
 
@@ -90,5 +90,3 @@ class DirWatcher extends EventEmitter {
         });
     }
 }
-
-exports.default = DirWatcher;

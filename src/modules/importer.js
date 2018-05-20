@@ -1,6 +1,6 @@
-const fs = require('fs');
+import fs from 'fs';
 
-class Importer {
+export default class Importer {
     constructor(path, dirwatcher, syncImport) {
         dirwatcher.on('changed', (listToImport) => {
             if (listToImport.length > 0) {
@@ -58,5 +58,3 @@ class Importer {
         }
     }
 }
-
-exports.default = Importer;
