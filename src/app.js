@@ -15,7 +15,6 @@ const syncImport = JSON.parse(getValue('-si')) || false;
 const isForFixedCount = false;
 const countFiles = 10;
 
-
 console.log(`The name of application is '${config.name}'`);
 
 const user = new User();
@@ -23,4 +22,3 @@ const product = new Product();
 
 const dirwatcher = new DirWatcher(path, delay);
 const importer = new Importer(path, dirwatcher, syncImport);
-

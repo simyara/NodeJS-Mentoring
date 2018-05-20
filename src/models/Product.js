@@ -3,3 +3,4 @@ export class Product {
         console.log(`Product module`);
     }
 }
+
