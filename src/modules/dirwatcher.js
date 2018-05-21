@@ -31,57 +31,69 @@ export default class DirWatcher extends EventEmitter {
         return result;
     }
 
+    findDeletedFiles(savedListOfNames, currentListOfNames) {
+        return this.difference(savedListOfNames, currentListOfNames);
+    };
+
+    findAddedFiles(savedListOfNames, currentListOfNames) {
+        return this.difference(currentListOfNames, savedListOfNames);
+    }
+
+    findUpdatedFiles(savedListOfNames, currentListOfNames){
+        var tempList = currentListOfNames.filter(e => savedListOfNames.includes(e));
+        var wasChanged = [];
+        tempList.forEach((e) => {
+            var hash = this.createHash(this.path + e);
+            var dirwatcherFile = this.files.find((el) => (el.name == e));
+            if (dirwatcherFile.hash != hash) {
+                wasChanged.push({
+                    name: e,
+                    hash: hash
+                });
+                dirwatcherFile.hash = hash;
+            }
+        });
+        wasChanged = wasChanged.map((e) => {
+            return e.name
+        });
+
+        return wasChanged;
+    }
+
     watch() {
         fs.readdir(this.path, (err, items) => {
             var isChanged = false;
+            var dirwatcherListOfName = this.files.map((e) => {
+                return e.name
+            });
+
             if (err) {
                 throw err;
             }
 
-            var wasDeleted = this.difference(this.files.map((e) => {
-                return e.name
-            }), items);
-            if (wasDeleted.length > 0) {
-                console.log(`Was deteled ${wasDeleted.length} files: ${wasDeleted}`);
+            var deletedFilesList = this.findDeletedFiles(dirwatcherListOfName, items);
+            if (deletedFilesList.length > 0) {
+                console.log(`Was deteled ${deletedFilesList.length} files: ${deletedFilesList}`);
                 this.files = this.files.filter(e => items.includes(e.name));
             }
 
-            var tempList = items.filter(e => this.files.map((el) => {
-                return el.name
-            }).includes(e));
-            var wasChanged = [];
-            tempList.forEach((e) => {
-                var hash = this.createHash(this.path + e);
-                var dirwatcherFile = this.files.find((el) => (el.name == e));
-                if (dirwatcherFile.hash != hash) {
-                    wasChanged.push({
-                        name: e,
-                        hash: hash
-                    });
-                    dirwatcherFile.hash = hash;
-                }
-            });
+            var wasChanged = this.findUpdatedFiles(dirwatcherListOfName, items);
             if (wasChanged.length > 0) {
-                wasChanged = wasChanged.map((e) => {
-                    return e.name
-                });
                 console.log(`Was changed ${wasChanged.length} files: ${wasChanged}`);
             }
 
-            var wasAdded = this.difference(items, this.files.map((e) => {
-                return e.name
-            }));
-            if (wasAdded.length > 0) {
-                console.log(`Was added ${wasAdded.length} files: ${wasAdded}`);
-                wasAdded.forEach((e) => this.files.push({
+            var addedFilesList = this.findAddedFiles(dirwatcherListOfName, items)
+            if (addedFilesList.length > 0) {
+                console.log(`Was added ${addedFilesList.length} files: ${addedFilesList}`);
+                addedFilesList.forEach((e) => this.files.push({
                     name: e,
                     hash: this.createHash(this.path + e)
                 }))
             }
 
-            isChanged = (wasDeleted.length > 0 || wasAdded.length > 0 || wasChanged.length > 0) ? true : isChanged;
+            isChanged = (deletedFilesList.length || addedFilesList.length || wasChanged.length);
             if (isChanged) {
-                this.emit('changed', wasAdded.concat(wasChanged));
+                this.emit('changed', addedFilesList.concat(wasChanged));
                 this.countFiles = items.length;
             } else {
                 console.log('no any changes');

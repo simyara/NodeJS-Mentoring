@@ -35,7 +35,7 @@ export default class Importer {
         return jsonObj;
     }
 
-    import (path) {
+    import(path) {
         const type = 'utf8';
         const importer = this;
         return new Promise(function(resolve, reject) {

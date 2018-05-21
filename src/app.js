@@ -8,7 +8,7 @@ function getValue(flag) {
     return (index > -1) ? process.argv[index + 1] : null;
 }
 
-const path = __dirname + (getValue('-dir')|| ('/data/'));
+const dir4watch = __dirname + (getValue('-dir')|| ('/data/'));
 const delay = 2*1000;
 const syncImport = JSON.parse(getValue('-si')) || false;
 
@@ -20,5 +20,5 @@ console.log(`The name of application is '${config.name}'`);
 const user = new User();
 const product = new Product();
 
-const dirwatcher = new DirWatcher(path, delay);
-const importer = new Importer(path, dirwatcher, syncImport);
+const dirwatcher = new DirWatcher(dir4watch, delay);
+const importer = new Importer(dir4watch, dirwatcher, syncImport);
