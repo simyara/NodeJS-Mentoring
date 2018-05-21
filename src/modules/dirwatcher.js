@@ -32,28 +32,27 @@ export default class DirWatcher extends EventEmitter {
     }
 
     watch() {
-        var dirwatcher = this;
-        fs.readdir(this.path, function(err, items) {
+        fs.readdir(this.path, (err, items) => {
             var isChanged = false;
             if (err) {
                 throw err;
             }
 
-            var wasDeleted = dirwatcher.difference(dirwatcher.files.map((e) => {
+            var wasDeleted = this.difference(this.files.map((e) => {
                 return e.name
             }), items);
             if (wasDeleted.length > 0) {
                 console.log(`Was deteled ${wasDeleted.length} files: ${wasDeleted}`);
-                dirwatcher.files = dirwatcher.files.filter(e => items.includes(e.name));
+                this.files = this.files.filter(e => items.includes(e.name));
             }
 
-            var tempList = items.filter(e => dirwatcher.files.map((el) => {
+            var tempList = items.filter(e => this.files.map((el) => {
                 return el.name
             }).includes(e));
             var wasChanged = [];
             tempList.forEach((e) => {
-                var hash = dirwatcher.createHash(dirwatcher.path + e);
-                var dirwatcherFile = dirwatcher.files.find((el) => (el.name == e));
+                var hash = this.createHash(this.path + e);
+                var dirwatcherFile = this.files.find((el) => (el.name == e));
                 if (dirwatcherFile.hash != hash) {
                     wasChanged.push({
                         name: e,
@@ -69,21 +68,21 @@ export default class DirWatcher extends EventEmitter {
                 console.log(`Was changed ${wasChanged.length} files: ${wasChanged}`);
             }
 
-            var wasAdded = dirwatcher.difference(items, dirwatcher.files.map((e) => {
+            var wasAdded = this.difference(items, this.files.map((e) => {
                 return e.name
             }));
             if (wasAdded.length > 0) {
                 console.log(`Was added ${wasAdded.length} files: ${wasAdded}`);
-                wasAdded.forEach((e) => dirwatcher.files.push({
+                wasAdded.forEach((e) => this.files.push({
                     name: e,
-                    hash: dirwatcher.createHash(dirwatcher.path + e)
+                    hash: this.createHash(this.path + e)
                 }))
             }
 
             isChanged = (wasDeleted.length > 0 || wasAdded.length > 0 || wasChanged.length > 0) ? true : isChanged;
             if (isChanged) {
-                dirwatcher.emit('changed', wasAdded.concat(wasChanged));
-                dirwatcher.countFiles = items.length;
+                this.emit('changed', wasAdded.concat(wasChanged));
+                this.countFiles = items.length;
             } else {
                 console.log('no any changes');
             }

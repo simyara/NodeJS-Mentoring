@@ -23,9 +23,9 @@ export default class Importer {
         var jsonObj = [];
         var bufferString = data.toString();
         var arr = bufferString.split('\n');
-        var headers = arr[0].split(';');
+        var headers = arr[0].split(',');
         for (var i = 1; i < arr.length; i++) {
-            var data = arr[i].split(';');
+            var data = arr[i].split(',');
             var obj = {};
             for (var j = 0; j < data.length; j++) {
                 obj[headers[j].trim()] = data[j].trim();
